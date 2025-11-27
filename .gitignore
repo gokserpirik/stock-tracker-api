@@ -1,11 +1,4 @@
-# Dependency directories
-node_modules/
-
-# Compilation output
-dist/
-
-# Environment variables (Crucial security!)
-.env
-
-# OS junk files
-.DS_Store
+**/node_modules/
+**/.env
+**/dist/
+**/.DS_Store
