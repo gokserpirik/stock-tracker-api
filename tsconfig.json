@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",              /* Modern JS */
+    "module": "NodeNext",            /* The new standard for Node */
+    "moduleResolution": "NodeNext",
+    "outDir": "./dist",              /* Where compiled files go */
+    "rootDir": "./src",              /* Where we write code */
+    "strict": true,                  /* Be strict! Catch bugs! */
+    "esModuleInterop": true          /* Play nice with old packages */
+  }
+}
