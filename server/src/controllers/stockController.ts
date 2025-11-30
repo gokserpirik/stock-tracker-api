@@ -58,9 +58,7 @@ export const deleteStock = async (req: Request, res: Response) => {
     catch (err: any) {
         res.status(500).send(err.message);
     }
-}
-
-
+};
 
 export const getPortfolioValue = async (req: Request, res: Response) => {
   try {
