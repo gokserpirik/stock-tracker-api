@@ -1,9 +1,9 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { useEffect } from 'react'
 import { GridBackground } from '../components/ui/grid-background'
 import { BentoGrid, BentoGridItem } from '../components/ui/bento-grid'
-import { TrendingUp } from 'lucide-react'
-import {Github} from 'lucide-react'
-
+import { useAuth } from '../hooks/useAuth'
+import { Github } from 'lucide-react'
 
 export const Route = createFileRoute('/')({
   component: HomePage,
@@ -62,7 +62,7 @@ function HomePage() {
           Manage your portfolio, track stock prices, and analyze your investments in one place.
         </p>
         <Link
-          to="/stocks"
+          to="/auth/login"
           className="px-8 py-4 rounded-full bg-primary text-primary-foreground font-semibold text-lg hover:opacity-90 transition-opacity"
         >
           Check Stocks

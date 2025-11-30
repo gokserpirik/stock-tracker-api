@@ -17,33 +17,6 @@ A RESTful API for managing stock portfolios built with Express.js, TypeScript, a
 - pnpm
 - PostgreSQL
 
-## Installation
-
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd stock-api
-   ```
-
-2. Install dependencies:
-   ```bash
-   pnpm install
-   ```
-
-3. Create a `.env` file in the root directory:
-   ```env
-   PORT=3000
-   DB_USER=your_username
-   DB_PASSWORD=your_password
-   DB_HOST=localhost
-   DB_PORT=5432
-   DB_NAME=stockdb
-   ```
-
-4. Set up the PostgreSQL database:
-   ```sql
-   CREATE DATABASE stockdb;
-   ```
 
 ## Scripts
 

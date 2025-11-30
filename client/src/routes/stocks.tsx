@@ -1,7 +1,8 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useState, useEffect } from 'react'
 import { useStocks } from '../hooks/useStocks'
 import { useStockActions } from '../hooks/useStockActions'
+import { useAuth } from '../hooks/useAuth'
 import { BentoGrid } from '../components/ui/bento-grid'
 import { LoadingStocks } from '../components/LoadingStocks'
 import { StockCard } from '../components/StockCard'
@@ -13,6 +14,15 @@ export const Route = createFileRoute('/stocks')({
 })
 
 function StocksPage() {
+  const { isAuthenticated } = useAuth()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    // Redirect unauthenticated users to login
+    if (!isAuthenticated) {
+      navigate({ to: '/auth/login' })
+    }
+  }, [isAuthenticated, navigate])
   const { stocks, totalValue, loading, refetch } = useStocks()
   const { addStock, updateStock, deleteStock } = useStockActions()
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
@@ -35,7 +45,7 @@ function StocksPage() {
   }
 
   const handleUpdateStock = async (data: StockFormData) => {
-    
+
     const stockToUpdate = stocks.find(s => s.ticker.toUpperCase() === data.ticker.toUpperCase())
     
     if (!stockToUpdate) {

@@ -11,6 +11,14 @@ export interface Stock {
   purchase_date: string;
 }
 
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': token ? `Bearer ${token}` : '',
+  };
+};
+
 export function useStocks() {
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [totalValue, setTotalValue] = useState<number>(0);
@@ -19,8 +27,12 @@ export function useStocks() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const listRes = await fetch(`${API_URL}/stocks`);
-      const valRes = await fetch(`${API_URL}/stocks/value`);
+      const listRes = await fetch(`${API_URL}/stocks`, {
+        headers: getAuthHeaders(),
+      });
+      const valRes = await fetch(`${API_URL}/stocks/value`, {
+        headers: getAuthHeaders(),
+      });
       
       if (listRes.ok && valRes.ok) {
         const listData = await listRes.json();

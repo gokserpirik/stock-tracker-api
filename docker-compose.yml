@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # --- Service 1: The Database ---
+  db:
+    image: postgres:15-alpine  # Use pre-made official image
+    container_name: stock-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}      # Reads from .env
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data # Persist data even if container dies
+
+  # --- Service 2: The Backend API ---
+  api:
+    build: ./server            # Use the Dockerfile in /server
+    container_name: stock-api
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - DB_HOST=db             # "db" matches the service name above!
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_PORT=5432
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - db                     # Wait for DB to start first
+
+  # --- Service 3: The Frontend UI ---
+  web:
+    build: ./client            # Use the Dockerfile in /client
+    container_name: stock-web
+    restart: always
+    ports:
+      - "5173:5173"
+    environment:
+      # Browser runs on your Mac, so it still talks to localhost:3000
+      - VITE_API_URL=http://localhost:3000 
+    depends_on:
+      - api
+
+# Define the storage volume for the DB
+volumes:
+  pgdata:

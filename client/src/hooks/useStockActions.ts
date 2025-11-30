@@ -3,14 +3,20 @@ import { type StockFormData } from '../components/StockModal';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': token ? `Bearer ${token}` : '',
+  };
+};
+
 export function useStockActions() {
   const addStock = async (stock: StockFormData) => {
     try {
       const response = await fetch(`${API_URL}/stocks`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify(stock),
       });
       
@@ -30,9 +36,7 @@ export function useStockActions() {
     try {
       const response = await fetch(`${API_URL}/stocks/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify(stock),
       });
       
@@ -52,6 +56,7 @@ export function useStockActions() {
     try {
       const response = await fetch(`${API_URL}/stocks/${id}`, {
         method: 'DELETE',
+        headers: getAuthHeaders(),
       });
       
       if (!response.ok) {
