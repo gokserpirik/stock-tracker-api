@@ -52,20 +52,41 @@ The easiest way to run the application is using Docker Compose:
 git clone https://github.com/gokserpirik/stock-api.git
 cd stock-api
 
+# Create .env file with required variables
+cat > .env << EOF
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_NAME=stock_tracker
+JWT_SECRET=your_super_secret_jwt_key_change_this_in_production
+EOF
+
 # Start the application with Docker
-docker-compose up --build
+docker-compose up --build -d
 ```
 
 The application will be available at:
-- **Frontend:** http://localhost:5173
-- **Backend API:** http://localhost:3000
-- **PostgreSQL:** localhost:5432
+- **Application:** http://localhost (Nginx reverse proxy)
+- **Frontend (direct):** http://localhost:3300
+- **Backend API (direct):** http://localhost:3000
+
+**Recommended:** Access the application through **http://localhost** which uses Nginx as a reverse proxy.
 
 Docker Compose automatically:
 - Sets up PostgreSQL with the correct schema
 - Runs database migrations
-- Starts the backend server
-- Starts the frontend development server
+- Starts the backend server on port 3000
+- Starts the frontend development server on port 3300
+- Configures Nginx reverse proxy on port 80
+
+To stop the application:
+```bash
+docker-compose down
+```
+
+To view logs:
+```bash
+docker-compose logs -f
+```
 
 ## Manual Installation
 

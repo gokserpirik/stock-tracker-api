@@ -20,7 +20,22 @@ services:
       timeout: 5s
       retries: 5
 
-  # --- Service 2: The Backend API ---
+  # --- Service 2: Redis Cache ---
+  redis:
+    image: redis:alpine
+    container_name: stock-redis
+    restart: always
+    expose:
+      - "6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # --- Service 3: The Backend API ---
   api:
     build: ./server
     container_name: stock-api
@@ -35,11 +50,15 @@ services:
       - DB_NAME=${DB_NAME}
       - DB_PORT=5432
       - JWT_SECRET=${JWT_SECRET}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
 
-  # --- Service 3: The Frontend UI ---
+  # --- Service 4: The Frontend UI ---
   web:
     build: ./client
     container_name: stock-web
@@ -51,7 +70,7 @@ services:
     depends_on:
       - api
 
-  # --- Service 4: Nginx Reverse Proxy ---
+  # --- Service 5: Nginx Reverse Proxy ---
   nginx:
     image: nginx:alpine
     container_name: stock-nginx
@@ -67,3 +86,4 @@ services:
 # Define the storage volume for the DB
 volumes:
   pgdata:
+  redisdata:
