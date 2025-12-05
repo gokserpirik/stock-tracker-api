@@ -3,48 +3,66 @@ version: '3.8'
 services:
   # --- Service 1: The Database ---
   db:
-    image: postgres:15-alpine  # Use pre-made official image
+    image: postgres:15-alpine
     container_name: stock-db
     restart: always
     environment:
-      POSTGRES_USER: ${DB_USER}      # Reads from .env
+      POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
-    ports:
-      - "5432:5432"
+    expose:
+      - "5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data # Persist data even if container dies
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # --- Service 2: The Backend API ---
   api:
-    build: ./server            # Use the Dockerfile in /server
+    build: ./server
     container_name: stock-api
     restart: always
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     environment:
       - PORT=3000
-      - DB_HOST=db             # "db" matches the service name above!
+      - DB_HOST=db
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
       - DB_PORT=5432
       - JWT_SECRET=${JWT_SECRET}
     depends_on:
-      - db                     # Wait for DB to start first
+      db:
+        condition: service_healthy
 
   # --- Service 3: The Frontend UI ---
   web:
-    build: ./client            # Use the Dockerfile in /client
+    build: ./client
     container_name: stock-web
     restart: always
-    ports:
-      - "5173:5173"
+    expose:
+      - "3300"
     environment:
-      # Browser runs on your Mac, so it still talks to localhost:3000
-      - VITE_API_URL=http://localhost:3000 
+      - VITE_API_URL=http://localhost/api
     depends_on:
       - api
+
+  # --- Service 4: Nginx Reverse Proxy ---
+  nginx:
+    image: nginx:alpine
+    container_name: stock-nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    depends_on:
+      - api
+      - web
 
 # Define the storage volume for the DB
 volumes:

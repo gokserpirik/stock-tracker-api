@@ -10,7 +10,6 @@ RUN pnpm install
 
 COPY . .
 
-EXPOSE 5173
+EXPOSE 3300
 
-# "--host" so the browser can reach it from outside the container
 CMD ["pnpm", "dev", "--host"]
